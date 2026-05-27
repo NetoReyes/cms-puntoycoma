@@ -63,6 +63,13 @@ function App() {
   ] = useState("");
 
   // =========================
+  // AUTOSAVE
+  // =========================
+
+  const [guardando, setGuardando] =
+    useState(false);
+
+  // =========================
   // EDIT MODE
   // =========================
 
@@ -101,6 +108,117 @@ function App() {
 
       .replace(/\s+/g, "-");
   }
+
+  // =========================
+  // AUTOSAVE LOCAL
+  // =========================
+
+  useEffect(() => {
+
+    const draft =
+      localStorage.getItem(
+        "cms_draft"
+      );
+
+    if (draft) {
+
+      const data =
+        JSON.parse(draft);
+
+      setTitulo(
+        data.titulo || ""
+      );
+
+      setSlug(
+        data.slug || ""
+      );
+
+      setDescripcion(
+        data.descripcion || ""
+      );
+
+      setCategoria(
+        data.categoria || ""
+      );
+
+      setContenido(
+        data.contenido || ""
+      );
+
+      setImagen(
+        data.imagen || ""
+      );
+
+      setEstado(
+        data.estado || "borrador"
+      );
+
+      setSeoTitle(
+        data.seoTitle || ""
+      );
+
+      setSeoDescription(
+        data.seoDescription || ""
+      );
+
+      setSeoKeywords(
+        data.seoKeywords || ""
+      );
+    }
+
+  }, []);
+
+  // =========================
+  // GUARDADO AUTOMATICO
+  // =========================
+
+  useEffect(() => {
+
+    if (!token) {
+      return;
+    }
+
+    setGuardando(true);
+
+    const timeout =
+      setTimeout(() => {
+
+        localStorage.setItem(
+          "cms_draft",
+          JSON.stringify({
+            titulo,
+            slug,
+            descripcion,
+            categoria,
+            contenido,
+            imagen,
+            estado,
+            seoTitle,
+            seoDescription,
+            seoKeywords
+          })
+        );
+
+        setGuardando(false);
+
+      }, 1500);
+
+    return () =>
+      clearTimeout(timeout);
+
+  }, [
+    titulo,
+    slug,
+    descripcion,
+    categoria,
+    contenido,
+    imagen,
+    estado,
+    seoTitle,
+    seoDescription,
+    seoKeywords,
+    token
+  ]);
 
   async function cargarArticulos() {
 
@@ -266,6 +384,10 @@ function App() {
     setSeoKeywords("");
 
     setEditandoId(null);
+
+    localStorage.removeItem(
+      "cms_draft"
+    );
   }
 
   // =========================
@@ -456,6 +578,20 @@ function App() {
     >
 
       <h1>CMS Punto y Coma</h1>
+
+      {
+        guardando && (
+
+          <p
+            style={{
+              color: "#666",
+              marginBottom: "20px"
+            }}
+          >
+            Guardando borrador...
+          </p>
+        )
+      }
 
       {/* LOGIN */}
 

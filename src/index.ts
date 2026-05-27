@@ -240,6 +240,80 @@ export default {
     }
 
     // =========================
+    // MEDIA LIBRARY
+    // =========================
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/media"
+    ) {
+
+      const usuario =
+        verificarToken(
+          request,
+          env
+        );
+
+      if (!usuario) {
+
+        return Response.json({
+          error:
+            "No autorizado"
+        }, {
+          status: 401,
+          headers:
+            corsHeaders()
+        });
+      }
+
+      try {
+
+        const objects =
+          await env.MEDIA.list();
+
+        const archivos =
+          objects.objects.map(
+            (obj) => ({
+
+              nombre:
+                obj.key,
+
+              url:
+                `https://pub-442323e1509b4845800a54e39aecb107.r2.dev/${obj.key}`,
+
+              tamaño:
+                obj.size,
+
+              subido_en:
+                obj.uploaded
+            })
+          );
+
+        return Response.json(
+          archivos,
+          {
+            headers:
+              corsHeaders()
+          }
+        );
+
+      } catch (error) {
+
+        return Response.json({
+          error:
+            "Error cargando media",
+
+          detalle:
+            String(error)
+        }, {
+          status: 500,
+          headers:
+            corsHeaders()
+        });
+      }
+    }
+
+    // =========================
     // PERFIL
     // =========================
 
