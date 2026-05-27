@@ -1,0 +1,17 @@
+CREATE TABLE usuarios (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    nombre TEXT NOT NULL,
+
+    email TEXT NOT NULL UNIQUE,
+
+    password_hash TEXT NOT NULL,
+
+    rol TEXT NOT NULL DEFAULT 'autor',
+
+    activo INTEGER NOT NULL DEFAULT 1,
+
+    creado_en DATETIME DEFAULT CURRENT_TIMESTAMP
+
+);
